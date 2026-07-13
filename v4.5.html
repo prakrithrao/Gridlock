@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE GRIDLOCK // Safe v4.5</title>
+<style>
+:root {
+    --border-glow: #00f0ff;
+    --text-accent: #00ff66;
+    --prestige-color: #cc00ff;
+}
+body {
+    background-color: #0a0a0f;
+    padding: 20px;
+    color: #ffffff;
+    font-family: monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+}
+#settings-panel {
+    width: 810px;
+    background: #12121a;
+    border: 2px solid #333;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 150px 1fr 1fr 220px;
+    gap: 15px;
+    align-items: flex-end;
+}
+.settings-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+select, input[type="checkbox"] {
+    background: #1a1a26;
+    border: 1px solid var(--border-glow);
+    color: #fff;
+    padding: 5px;
+    font-family: inherit;
+    cursor: pointer;
+}
+#game-container {
+    display: grid;
+    grid-template-columns: 340px 480px;
+    gap: 20px;
+    width: 840px;
+    position: relative;
+    z-index: 2;
+}
+.panel {
+    background: #12121a;
+    border: 2px solid #222;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.15s ease;
+}
+.panel.flash-success {
+    border-color: var(--text-accent) !important;
+    box-shadow: inset 0 0 20px rgba(0, 255, 102, 0.4);
+    animation: screenShake 0.2s ease;
+}
+.panel.flash-failure {
+    border-color: #ff3333 !important;
+    box-shadow: inset 0 0 20px rgba(255, 51, 51, 0.4);
+    animation: screenShake 0.3s ease;
+}
+.panel.flash-warning {
+    border-color: #ff7f00 !important;
+    box-shadow: inset 0 0 20px rgba(255, 127, 0, 0.4);
+    animation: screenShake 0.25s ease;
+}
+@keyframes screenShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+.stat-display {
+    font-size: 28px;
+    color: var(--text-accent);
+    margin-bottom: 5px;
+    text-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
+}
+.sub-stat-display {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.btn-row {
+    display: grid;
+    grid-template-columns: 1fr 140px;
+    gap: 5px;
+    margin-bottom: 4px;
+}
+.btn {
+    background: #1a1a26;
+    border: 1px solid var(--border-glow);
+    color: var(--border-glow);
+    padding: 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-family: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 12px;
+    text-align: center;
+    transition: all 0.1s ease;
+}
+.btn:hover:not(:disabled) {
+    background: rgba(0, 240, 255, 0.1);
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+}
+.btn:disabled {
+    border-color: #444;
+    color: #444;
+    cursor: not-allowed;
+}
+.btn-prestige {
+    border-color: var(--prestige-color);
+    color: var(--prestige-color);
+    margin-top: 10px;
+    display: none;
+    width: 100%;
+}
+.btn-prestige:hover:not(:disabled) {
+    background: var(--prestige-color);
+    color: #000;
+    box-shadow: 0 0 15px var(--prestige-color);
+}
+.progress-bar-container {
+    background: #222;
+    height: 6px;
+    margin-bottom: 12px;
+}
+.progress-bar {
+    height: 100%;
+    background: var(--border-glow);
+    width: 0%;
+}
+#matrix-panel {
+    background: #000;
+    border: 1px solid #333;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+    position: relative;
+}
+.node-row {
+    display: grid;
+    grid-template-columns: 80px 140px 1fr;
+    background: #111;
+    border: 1px solid #222;
+    padding: 8px;
+    align-items: center;
+    font-size: 12px;
+}
+.multiplier-box {
+    border: 1px dashed var(--text-accent);
+    background: #05140b;
+    color: var(--text-accent);
+    padding: 10px;
+    margin-top: 15px;
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+.prestige-box {
+    border: 1px dashed var(--prestige-color);
+    background: #14051a;
+    color: var(--prestige-color);
+    padding: 10px;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+#shop-panel {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+    border: 1px solid var(--prestige-color);
+    padding: 10px;
+    background: #090514;
+}
+.shop-row {
+    display: grid;
+    grid-template-columns: 1fr 120px;
+    gap: 5px;
+    align-items: center;
+    font-size: 11px;
+}
+#shock-box {
+    text-align: center;
+    border: 1px solid #333;
+    padding: 10px;
+    margin-top: 15px;
+    position: relative;
+}
+#log {
+    grid-column: span 2;
+    background: #050508;
+    padding: 10px;
+    font-size: 11px;
+    color: #888;
+    height: 60px;
+    overflow-y: hidden;
+}
+.fx-particle {
+    position: fixed;
+    pointer-events: none;
+    font-size: 24px;
+    z-index: 9999;
+    animation: particleFly 1.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+@keyframes particleFly {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) scale(0.3) rotate(var(--r)); opacity: 0; }
+}
+.floating-toast {
+    position: absolute;
+    font-weight: bold;
+    font-size: 20px;
+    z-index: 1000;
+    pointer-events: none;
+    text-shadow: 0 0 8px #000;
+    animation: toastFloat 1.2s ease-out forwards;
+}
+@keyframes toastFloat {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-50px); opacity: 0; }
+}
+</style>
+</head>
+<body>
+<div style="display: flex; justify-content: center; align-items: center; width: 840px; position: relative; margin-bottom: 20px;">
+    <h1 style="text-align: center; color: var(--border-glow); letter-spacing: 2px; margin: 0;">[ THE GRIDLOCK ]</h1>
+    <button id="settings-toggle" class="btn" style="position: absolute; right: 0; padding: 6px 15px; font-weight: bold;">⚙️ SETTINGS</button>
+</div>
+<div id="settings-panel" style="display: none;">
+    <div class="settings-item" style="display: flex; flex-direction: column; width: 100%; gap: 6px; justify-content: flex-end;">
+        <div style="height: 12px; display: flex; align-items: center; justify-content: center;">
+            <label for="theme-select" style="font-size: 11px; font-weight: bold; color: #ffffff; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; display: block;">Colour Palette</label>
+        </div>
+        <select id="theme-select" class="btn" style="width: 100%; height: 32px; text-align-last: center; padding: 6px; font-size: 11px; font-weight: bold; background-color: #111111; color: var(--text-accent); border-color: var(--text-accent); cursor: pointer;">
+            <option value="cyber" style="background-color: #111111; color: #ffffff;">CYBERPUNK NEON</option>
+            <option value="amber" style="background-color: #111111; color: #ffffff;">RETRO AMBER</option>
+            <option value="plasma" style="background-color: #111111; color: #ffffff;">PLASMA MAGENTA</option>
+        </select>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 11px; color: #ffffff; width: 100%; grid-column: span 2;">
+        <div style="display: flex; flex-direction: column; gap: 0px; width: 100%; justify-content: flex-end;">
+            <div style="height: 12px; display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;">
+                <span style="font-weight: bold; color: var(--border-glow); letter-spacing: 0.5px;">AMBIENT MUSIC</span>
+                <button class="btn" id="mute-bgm" style="padding: 2px 8px; font-size: 10px; border-color: var(--border-glow); margin: 0;">MUTE</button>
+            </div>
+            <div style="height: 32px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                <input type="range" id="volume-bgm" min="0" max="100" step="0.01" value="100" style="width: 90%; accent-color: var(--border-glow); background: #1a1a26; height: 6px; cursor: pointer; margin: 0 auto; display: block;">
+            </div>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 0px; width: 100%; justify-content: flex-end;">
+            <div style="height: 12px; display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;">
+                <span style="font-weight: bold; color: var(--border-glow); letter-spacing: 0.5px;">AUDIO SFX</span>
+                <button class="btn" id="mute-sfx" style="padding: 2px 8px; font-size: 10px; border-color: var(--border-glow); margin: 0;">MUTE</button>
+            </div>
+            <div style="height: 32px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                <input type="range" id="volume-sfx" min="0" max="100" step="0.01" value="100" style="width: 90%; accent-color: var(--border-glow); background: #1a1a26; height: 6px; cursor: pointer; margin: 0 auto; display: block;">
+            </div>
+        </div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; grid-column: span 1; align-items: flex-end;">
+        <button class="btn" id="save-progress-btn" style="border-color: var(--text-accent); color: var(--text-accent); font-size: 12px; font-weight: bold; white-space: nowrap; padding: 8px 10px; height: 32px; display: flex; align-items: center; justify-content: center;">Save Progress</button>
+        <button class="btn" id="reset-progress-btn" style="border-color: #ff3333; color: #ff3333; font-size: 12px; font-weight: bold; white-space: nowrap; padding: 8px 10px; height: 32px; display: flex; align-items: center; justify-content: center;">Reset Data</button>
+    </div>
+</div>
+<div id="game-container">    
+    <div class="panel" id="left-panel">
+        <h2>Balance</h2>
+        <div class="stat-display" id="cash-display">$0.00</div>
+        <div class="sub-stat-display" id="eps-display">NET INCOME: $0.00/sec</div>
+        <button class="btn" id="manual-click" style="width: 100%; margin-bottom: 15px;">Manual Override (+$$$)</button>
+        
+        <h3>Market Acquisition</h3>
+        <div class="btn-row">
+            <button class="btn" id="buy-upA">Buy Node A ($15)</button>
+            <button class="btn" id="all-upA">ALL ($0)</button>
+        </div>
+        <div class="progress-bar-container"><div class="progress-bar" id="barA"></div></div>
+        
+        <div class="btn-row">
+            <button class="btn" id="buy-upB">Buy Node B ($120)</button>
+            <button class="btn" id="all-upB">ALL ($0)</button>
+        </div>
+        <div class="progress-bar-container"><div class="progress-bar" id="barB"></div></div>
+        
+        <div class="btn-row">
+            <button class="btn" id="buy-upC">Buy Node C ($500)</button>
+            <button class="btn" id="all-upC">ALL ($0)</button>
+        </div>
+        <div class="progress-bar-container"><div class="progress-bar" id="barC"></div></div>
+        
+        <div class="btn-row">
+            <button class="btn" id="buy-upD">Buy Node D ($2,500)</button>
+            <button class="btn" id="all-upD">ALL ($0)</button>
+        </div>
+        <div class="progress-bar-container"><div class="progress-bar" id="barD"></div></div>
+        
+        <div class="btn-row">
+            <button class="btn" id="buy-upE">Buy Node E ($15,000)</button>
+            <button class="btn" id="all-upE">ALL ($0)</button>
+        </div>
+        <div class="progress-bar-container"><div class="progress-bar" id="barE"></div></div>
+    </div>
+    
+    <div class="panel" id="right-panel">
+        <h2>System Matrix Registry</h2>
+        <div id="matrix-panel">
+            <div class="node-row" id="row-A"><span style="color: #00ff66; font-weight: bold;">[NODE A]</span><span id="count-A">Owned: 0</span><span id="rate-A" style="color: #666; text-align: right;">Status: OFFLINE</span></div>
+            <div class="node-row" id="row-B"><span style="color: #00f0ff; font-weight: bold;">[NODE B]</span><span id="count-B">Owned: 0</span><span id="rate-B" style="color: #666; text-align: right;">Status: OFFLINE</span></div>
+            <div class="node-row" id="row-C"><span style="color: #ffcc00; font-weight: bold;">[NODE C]</span><span id="count-C">Owned: 0</span><span id="rate-C" style="color: #666; text-align: right;">Status: OFFLINE</span></div>
+            <div class="node-row" id="row-D"><span style="color: #ff00ff; font-weight: bold;">[NODE D]</span><span id="count-D">Owned: 0</span><span id="rate-D" style="color: #666; text-align: right;">Status: OFFLINE</span></div>
+            <div class="node-row" id="row-E"><span style="color: #ff3333; font-weight: bold;">[NODE E]</span><span id="count-E">Owned: 0</span><span id="rate-E" style="color: #666; text-align: right;">Status: OFFLINE</span></div>
+        </div>
+        
+        <div class="multiplier-box" id="mult-display">GLOBAL EFFICIENCY: 1.00x MULTIPLIER</div>
+        <div class="prestige-box" id="prestige-display">TOKENS BANK: 0 | TARGET: $100,000</div>
+        <button class="btn btn-prestige" id="prestige-btn">INITIATE QUANTUM RESET</button>
+        
+        <div id="shop-panel">
+            <div style="font-size:12px; font-weight: bold; color:var(--prestige-color); text-align:center; margin-bottom:5px;">[ PERK SELECTION TERMINAL ]</div>
+            <div class="shop-row"><span id="label-perkZ">LEVEL 1 HEDGE EXTENSION (6.00S ALARM)</span><button class="btn" id="shop-perkZ" style="border-color:var(--prestige-color); color:var(--prestige-color); padding: 4px;">1 TKN</button></div>
+            <div class="shop-row"><span id="label-perkX">LEVEL 1 SYSTEM SYNERGY (1.20X OUTPUT)</span><button class="btn" id="shop-perkX" style="border-color:var(--prestige-color); color:var(--prestige-color); padding: 4px;">2 TKNS</button></div>
+            <div class="shop-row"><span id="label-perkY">LEVEL 1 CYCLE RECLOCK (0.90X FASTER)</span><button class="btn" id="shop-perkY" style="border-color:var(--prestige-color); color:var(--prestige-color); padding: 4px;">3 TKNS</button></div>
+        </div>
+        
+        <div id="shock-box">
+            <div id="shock-label" style="font-weight: bold; margin-bottom: 4px;">MARKET EQUILIBRIUM</div>
+            <div id="shock-countdown" style="color: #ff3333; font-weight: bold; font-size: 18px; margin-bottom: 8px;">NEXT SHOCK: 10s</div>
+            <div id="shock-actions" style="display: none; gap: 10px;">
+                <button class="btn" id="shock-short" style="border-color:#ff3333; color:#ff3333; flex: 1;">SHORT (-50%)</button>
+                <button class="btn" id="shock-long" style="border-color:#ff3333; color:#ff3333; flex: 1;">LONG (+50%)</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="log">
+        <div id="log-text">> Welcome to The Gridlock! Click 'Manual Override' to earn money. Buy passive Nodes to automate cash flow. Every 10s, a Market Shock triggers: predict SHORT/LONG vectors to win massive bonuses, or ignore it and get liquidated! Reach target parameters to reset for permanent Shop Tokens.</div>
+    </div>
+</div>
+<script>
+let cash = 0.0;
+let shockTimer = 10;
+let isShockActive = 0;
+let shockType = 0;
+let prestigeTokens = 0;
+let resetCount = 0;
+let blockShockEvents = false;
+let clickCombo = 0;
+let comboTimer = null;
+let totalTokensEarned = 0;
+
+let basePrestigeRequirement = 100000;
+let perks = { 
+    X: { lvl: 0, cost: 2, baseCost: 2 }, 
+    Y: { lvl: 0, cost: 3, baseCost: 3 }, 
+    Z: { lvl: 0, cost: 1, baseCost: 1 } 
+};
+let nodes = {
+    A: { count: 0, cost: 15, baseCost: 15, timer: 0.0, speed: 1.2, payout: 1.5, basePayout: 1.5, inflation: 1.35 },
+    B: { count: 0, cost: 120, baseCost: 120, timer: 0.0, speed: 2.7, payout: 12.0, basePayout: 12.0, inflation: 1.40 },
+    C: { count: 0, cost: 500, baseCost: 500, timer: 0.0, speed: 4.5, payout: 65.0, basePayout: 65.0, inflation: 1.45 },
+    D: { count: 0, cost: 2500, baseCost: 2500, timer: 0.0, speed: 8.0, payout: 420.0, basePayout: 420.0, inflation: 1.50 },
+    E: { count: 0, cost: 15000, baseCost: 15000, timer: 0.0, speed: 15.0, payout: 3100.0, basePayout: 3100.0, inflation: 1.60 }
+};
+// Automatically load saved profile states on engine boot
+const savedGameRaw = localStorage.getItem('gridlock_save_data');
+if (savedGameRaw) {
+    try {
+        const load = JSON.parse(savedGameRaw);
+        if (load.cash !== undefined) cash = load.cash;
+        if (load.prestigeTokens !== undefined) prestigeTokens = load.prestigeTokens;
+        if (load.resetCount !== undefined) resetCount = load.resetCount;
+        if (load.totalTokensEarned !== undefined) totalTokensEarned = load.totalTokensEarned;
+ 
+        if (load.perks) {
+            if (load.perks.X) { perks.X.lvl = load.perks.X.lvl; perks.X.cost = load.perks.X.cost; }
+            if (load.perks.Y) { perks.Y.lvl = load.perks.Y.lvl; perks.Y.cost = load.perks.Y.cost; }
+            if (load.perks.Z) { perks.Z.lvl = load.perks.Z.lvl; perks.Z.cost = load.perks.Z.cost; }
+        }
+        
+        if (load.nodes) {
+            ['A', 'B', 'C', 'D', 'E'].forEach(k => {
+                if (load.nodes[k]) {
+                    nodes[k].count = load.nodes[k].count;
+                    nodes[k].cost = load.nodes[k].cost;
+                    if (load.nodes[k].payout !== undefined) nodes[k].payout = load.nodes[k].payout;
+                }
+            });
+        }
+        
+        // Use a tiny 10ms execution delay to ensure the browser DOM is completely built
+        // FORCE INTERFACE OVERWRITE IMMEDIATELY AFTER INITIAL RENDERING
+        setTimeout(() => {
+            // 1. RECALCULATE SAVED MILESTONE MULTIPLIERS SILENTLY IF NOT IN SAVE FILE
+            let milestones = [5, 10, 25, 50, 100, 250, 500];
+            
+            ['A', 'B', 'C', 'D', 'E'].forEach(key => {
+                let n = nodes[key];
+                // Recalculate accurately if loading an older legacy save file structure
+                if (load.nodes && load.nodes[key] && load.nodes[key].payout === undefined) {
+                    if (n && n.count > 0) {
+                        n.payout = n.basePayout;
+                        for (let m of milestones) {
+                            if (n.count >= m) {
+                                n.payout *= 2.0;
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 2. Run core refresh loops to push correct numbers to your display elements
+            refreshAllRows();
+            
+            if (typeof refreshShopLabels === 'function') refreshShopLabels();
+            if (typeof calculateEPS === 'function') calculateEPS(); // Forces net income to match
+            
+            logMessage("SYSTEM DATA: Active session data restored. Multipliers synchronized.");
+        }, 10);
+    } catch (err) {
+        console.error("Failed parsing profile configuration registry:", err);
+    }
+}
+const cashDisplay = document.getElementById('cash-display');
+const epsDisplay = document.getElementById('eps-display');
+const multDisplay = document.getElementById('mult-display');
+const prestigeDisplay = document.getElementById('prestige-display');
+const prestigeBtn = document.getElementById('prestige-btn');
+const shopPanel = document.getElementById('shop-panel');
+const btnClick = document.getElementById('manual-click');
+const shockLabel = document.getElementById('shock-label');
+const shockCountdown = document.getElementById('shock-countdown');
+const shockActions = document.getElementById('shock-actions');
+const leftPanel = document.getElementById('left-panel');
+const rightPanel = document.getElementById('right-panel');
+const shockBox = document.getElementById('shock-box');
+const logText = document.getElementById('log-text');
+const btnShort = document.getElementById('shock-short');
+const btnLong = document.getElementById('shock-long');
+
+function logMessage(msg) {
+    if (logText) {
+        // 1. Split the current text block back into an array of separate lines
+        // We clean up any stray '<br>' tags to keep the data neat
+        let lines = logText.innerHTML ? logText.innerHTML.split('<br>') : [];
+        
+        // 2. Remove empty items from the array
+        lines = lines.filter(line => line.trim() !== "");
+        
+        // 3. Add the brand new message right at the very top of our array
+        lines.unshift('>' + msg);
+        
+        // 4. TRUNCATE SYSTEM: Keep only the 5 most recent lines in active memory
+        if (lines.length > 5) {
+            lines = lines.slice(0, 5);
+        }
+        
+        // 5. Save it back to your screen, joining the 5 allowed lines with fresh breaks
+        logText.innerHTML = lines.join('<br>') + '<br>';
+    }
+}
+function formatNum(value) { if (value >= 1000000) return value.toExponential(2).toUpperCase(); return value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }); }
+function getCurrentPrestigeRequirement() { 
+    return basePrestigeRequirement * Math.pow(2, totalTokensEarned); 
+}
+
+// Processes cash continuously to find out exactly how many tokens you can afford at ascending costs
+function calculatePendingTokens() { 
+    let count = 0;
+    let tempCash = cash;
+    // Loops and checks if you have enough cash for the next token, accounting for tokens already in flight
+    while (tempCash >= basePrestigeRequirement * Math.pow(2, totalTokensEarned + count)) {
+        tempCash -= basePrestigeRequirement * Math.pow(2, totalTokensEarned + count);
+        count++;
+    }
+    return count;
+}
+function getGlobalMultiplier() { return 1.0 + (nodes.A.count + nodes.B.count + nodes.C.count + nodes.D.count + nodes.E.count) * 0.02 + perks.X.lvl * 0.20; }
+function getNodeSpeed(key) { return nodes[key].speed * Math.pow(0.90, perks.Y.lvl); }
+function getShockSafetyWindow() { return 4 + (perks.Z.lvl * 2); }
+
+function calculateEPS() {
+    let mult = getGlobalMultiplier();
+    return (['A', 'B', 'C', 'D', 'E'].reduce((acc, k) => acc + (nodes[k].count * nodes[k].payout / getNodeSpeed(k)), 0)) * mult;
+}
+
+function updateRowDisplay(key) {
+    let n = nodes[key], globalMult = getGlobalMultiplier(), totalOutput = (n.count * n.payout * globalMult) / getNodeSpeed(key);
+    let rateField = document.getElementById('rate-' + key);
+    let countField = document.getElementById('count-' + key);
+    if(countField) countField.innerText = 'Owned: ' + n.count;
+    if (rateField) {
+        if (n.count > 0) { rateField.style.color = 'var(--text-accent)'; rateField.innerHTML = 'Active: +$' + formatNum(totalOutput) + '/s'; }
+        else { rateField.style.color = '#666'; rateField.innerHTML = 'Status: OFFLINE'; }
+    }
+}
+function refreshAllRows() {
+    // Fetch your exact global scaling efficiency multiplier
+    let globalMult = (typeof getGlobalMultiplier === 'function') ? getGlobalMultiplier() : 1;
+
+    ['A', 'B', 'C', 'D', 'E'].forEach(key => {
+        let n = nodes[key];
+        
+        // 1. Update individual buy button text with $
+        let individualBtn = document.getElementById('buy-up' + key);
+        if (individualBtn) {
+            individualBtn.innerText = 'BUY NODE ' + key + ' ($' + formatNum(n.cost) + ')';
+        }
+        
+        // 2. Update visual count tracker text
+        let countLabel = document.getElementById('count-' + key);
+        if (countLabel) {
+            countLabel.innerText = 'Owned: ' + n.count;
+        }
+
+        // 3. Update Income Labels matching your exact calculateEPS formula
+        let rateLabel = document.getElementById('rate-' + key);
+        if (rateLabel) {
+            if (!n.count || n.count <= 0) {
+                rateLabel.innerText = "Status: OFFLINE";
+                rateLabel.style.color = "#666"; 
+            } else {
+                // Get the accurate dynamic speed using your engine's function
+                let activeSpeed = (typeof getNodeSpeed === 'function') ? getNodeSpeed(key) : n.speed;
+                
+                // Exact formula: (count * payout / speed) * global_multiplier
+                let totalIncomePerSec = (n.count * n.payout / activeSpeed) * globalMult;
+                
+                rateLabel.innerText = "$" + formatNum(totalIncomePerSec) + "/s";
+                rateLabel.style.color = "var(--text-accent)"; 
+            }
+        }
+    });
+
+    // 4. Synchronize the "ALL" button text with Node A's current cost
+    let allBtn = document.getElementById('buy-all');
+    if (allBtn && nodes.A) {
+        allBtn.innerText = 'ALL ($' + formatNum(nodes.A.cost) + ')';
+    }
+}
+function getBulkPurchasePreview(key) {
+    let currentCost = nodes[key].cost, inflation = nodes[key].inflation, testCash = cash, cumulativeSpent = 0;
+    while (testCash >= currentCost) { testCash -= currentCost; cumulativeSpent += currentCost; currentCost = Math.floor(currentCost * inflation); }
+    return cumulativeSpent;
+}
+
+function refreshShopLabels() {
+    let tX = perks.X.lvl + 1, tY = perks.Y.lvl + 1, tZ = perks.Z.lvl + 1;
+    let lblX = document.getElementById('label-perkX');
+    let lblY = document.getElementById('label-perkY');
+    let lblZ = document.getElementById('label-perkZ');
+    let btnX = document.getElementById('shop-perkX');
+    let btnY = document.getElementById('shop-perkY');
+    let btnZ = document.getElementById('shop-perkZ');
+
+    if(lblX) lblX.innerText = `LEVEL ${tX} SYSTEM SYNERGY (${formatNum(1.0 + tX * 0.20)}X OUTPUT)`;
+    if(lblY) lblY.innerText = `LEVEL ${tY} CYCLE RECLOCK (${formatNum(Math.pow(0.90, tY))}X FASTER)`;
+    if(lblZ) lblZ.innerText = `LEVEL ${tZ} HEDGE EXTENSION (${formatNum(4 + tZ * 2)}S ALARM)`;
+    if(btnX) btnX.innerText = `${formatNum(perks.X.cost)} TKN${perks.X.cost > 1 ? 'S' : ''}`;
+    if(btnY) btnY.innerText = `${formatNum(perks.Y.cost)} TKNS`;
+    if(btnZ) btnZ.innerText = `${formatNum(perks.Z.cost)} TKNS`;
+}
+document.getElementById('theme-select').addEventListener('change', (e) => {
+    const choice = e.target.value;
+    if (choice === 'cyber') { document.documentElement.style.setProperty('--border-glow', '#00f0ff'); document.documentElement.style.setProperty('--text-accent', '#00ff66'); document.documentElement.style.setProperty('--prestige-color', '#cc00ff'); }
+    else if (choice === 'amber') { document.documentElement.style.setProperty('--border-glow', '#ffb000'); document.documentElement.style.setProperty('--text-accent', '#ffcc00'); document.documentElement.style.setProperty('--prestige-color', '#ff5f00'); }
+    else if (choice === 'plasma') { document.documentElement.style.setProperty('--border-glow', '#ff0055'); document.documentElement.style.setProperty('--text-accent', '#ff00ff'); document.documentElement.style.setProperty('--prestige-color', '#7000ff'); }
+});
+// Declare globally so line 464 can see it
+let audioCtx;
+
+window.addEventListener('click', async () => {
+    // Initialize the global variable here on click
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    
+    if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+    }
+    
+    console.log('AudioContext successfully unlocked on first click!');
+}, { once: true });
+
+let bgmVolume = 0.0; let sfxVolume = 0.0; let bgmInterval = null;
+let preMuteBgmVol = 100; let preMuteSfxVol = 100;
+
+const volBgmSlider = document.getElementById('volume-bgm');
+const volSfxSlider = document.getElementById('volume-sfx');
+
+function updateBgmVolume(val) {
+    bgmVolume = parseFloat(val) / 100;
+    if (volBgmSlider) volBgmSlider.value = val;
+    if (bgmVolume === 0) {
+        if (bgmInterval) { clearInterval(bgmInterval); bgmInterval = null; }
+    } else {
+        if (!bgmInterval) startBGM();
+    }
+}
+
+function updateSfxVolume(val) {
+    sfxVolume = parseFloat(val) / 100;
+    if (volSfxSlider) volSfxSlider.value = val;
+}
+
+if (volBgmSlider) {
+    volBgmSlider.addEventListener('input', (e) => {
+        updateBgmVolume(e.target.value);
+        if (bgmVolume > 0 || sfxVolume > 0) masterMuted = false;
+    });
+}
+
+if (volSfxSlider) {
+    volSfxSlider.addEventListener('input', (e) => {
+        updateSfxVolume(e.target.value);
+        if (bgmVolume > 0 || sfxVolume > 0) masterMuted = false;
+    });
+}
+
+document.getElementById('mute-bgm').addEventListener('click', () => {
+    if (bgmVolume > 0) { preMuteBgmVol = volBgmSlider.value; updateBgmVolume(0); }
+    else { updateBgmVolume(preMuteBgmVol > 0 ? preMuteBgmVol : 100); }
+});
+
+document.getElementById('mute-sfx').addEventListener('click', () => {
+    if (sfxVolume > 0) { preMuteSfxVol = volSfxSlider.value; updateSfxVolume(0); }
+    else { updateSfxVolume(preMuteSfxVol > 0 ? preMuteSfxVol : 100); }
+});
+
+function playSound(type) {
+    if (sfxVolume === 0) return;
+    
+    // Safety check: Initialize context if it doesn't exist yet
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    
+    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    
+    if (type === 'click') { osc.type = 'square'; osc.frequency.setValueAtTime(987.77, audioCtx.currentTime); osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.07); gain.gain.setValueAtTime(0.08 * sfxVolume, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.25); osc.start(); osc.stop(audioCtx.currentTime + 0.25); }
+    else if (type === 'crit') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(2093.00, audioCtx.currentTime + 0.3); gain.gain.setValueAtTime(0.15 * sfxVolume, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.3); osc.start(); osc.stop(audioCtx.currentTime + 0.3); }
+    else if (type === 'buy') { osc.type = 'triangle'; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.setValueAtTime(450, audioCtx.currentTime + 0.05); osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.1 * sfxVolume, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.18); osc.start(); osc.stop(audioCtx.currentTime + 0.18); }
+    else if (type === 'win') { osc.type = 'triangle'; let t = audioCtx.currentTime; osc.frequency.setValueAtTime(523.25, t); osc.frequency.setValueAtTime(659.25, t + 0.08); osc.frequency.setValueAtTime(783.99, t + 0.16); osc.frequency.setValueAtTime(1046.50, t + 0.24); gain.gain.setValueAtTime(0.18 * sfxVolume, t); gain.gain.linearRampToValueAtTime(0.001, t + 0.45); osc.start(); osc.stop(t + 0.45); }
+    else if (type === 'lose') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(60, audioCtx.currentTime + 0.5); gain.gain.setValueAtTime(0.25 * sfxVolume, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.5); osc.start(); osc.stop(audioCtx.currentTime + 0.5); }
+}
+
+function startBGM() {
+    if (bgmInterval) return;
+    let step = 0; const trackNotes = [110.00, 130.81, 146.83, 164.81];
+    bgmInterval = setInterval(() => {
+        if (bgmVolume === 0 || !audioCtx) return;
+        
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.connect(gain); 
+        gain.connect(audioCtx.destination);
+        
+        osc.type = 'triangle'; 
+        osc.frequency.setValueAtTime(trackNotes[step % trackNotes.length], audioCtx.currentTime);
+        
+        gain.gain.setValueAtTime(0.06 * bgmVolume, audioCtx.currentTime); 
+        gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+        
+        osc.start(); 
+        osc.stop(audioCtx.currentTime + 0.4); 
+        step++;
+    }, 500);
+}
+
+function spawnBurstAt(x, y, glyphs) {
+    for (let i = 0; i < 12; i++) {
+        const p = document.createElement('div'); p.className = 'fx-particle';
+        p.innerText = glyphs[Math.floor(Math.random() * glyphs.length)];
+        p.style.left = x + 'px'; p.style.top = y + 'px';
+        p.style.setProperty('--x', (Math.random() * 160 - 80) + 'px');
+        p.style.setProperty('--y', (Math.random() * 160 - 80) + 'px');
+        p.style.setProperty('--r', (Math.random() * 360 - 180) + 'deg');
+        document.body.appendChild(p); setTimeout(() => p.remove(), 1500);
+    }
+}
+
+function spawnCelebration(customPool) {
+    const pool = customPool || [['✨','🌟','👑'], ['💰','📈','🔥'], ['🚀','⚡','💎']]; 
+    const chosenFX = pool[Math.floor(Math.random() * pool.length)];
+    for (let i = 0; i < 40; i++) {
+        const p = document.createElement('div'); p.className = 'fx-particle';
+        p.innerText = chosenFX[Math.floor(Math.random() * chosenFX.length)];
+        p.style.left = '50vw'; p.style.top = '50vh';
+        p.style.setProperty('--x', (Math.random() * 600 - 300) + 'px');
+        p.style.setProperty('--y', (Math.random() * 600 - 300) + 'px');
+        p.style.setProperty('--r', (Math.random() * 720 - 360) + 'deg');
+        document.body.appendChild(p); setTimeout(() => p.remove(), 1500);
+    }
+}
+
+function spawnToast(text, colorHex, container) {
+    const t = document.createElement('div'); t.className = 'floating-toast';
+    t.innerText = text; t.style.color = colorHex; t.style.left = '35%'; t.style.top = '30%'; 
+    (container || shockBox).appendChild(t);
+    setTimeout(() => t.remove(), 1200);
+}
+let lastTime = performance.now();
+
+// Global tracking variable for the master mute state
+let masterMuted = true;
+let preMasterMuteBgmVol = 100;
+let preMasterMuteSfxVol = 100;
+
+window.addEventListener('keydown', (e) => {
+    // Check if the pressed key is 'm' or 'M'
+    if (e.key === 'm' || e.key === 'M') {
+        masterMuted = !masterMuted;
+        
+        if (masterMuted) {
+            preMasterMuteBgmVol = volBgmSlider ? volBgmSlider.value : 100;
+            preMasterMuteSfxVol = volSfxSlider ? volSfxSlider.value : 100;
+            updateBgmVolume(0);
+            updateSfxVolume(0);
+            logMessage("SYSTEM AUDIO: MUTED ALL");
+        } else {
+            // Re-initialize AudioContext safely if needed on unmute
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            updateBgmVolume(preMasterMuteBgmVol > 0 ? preMasterMuteBgmVol : 100);
+            updateSfxVolume(preMasterMuteSfxVol > 0 ? preMasterMuteSfxVol : 100);
+            logMessage("SYSTEM AUDIO: ONLINE");
+        }
+    }
+});
+
+function gameLoop(now) {
+    let dt = (now - lastTime) / 1000; lastTime = now;
+    let globalMult = getGlobalMultiplier(), keys = ['A', 'B', 'C', 'D', 'E'];
+    for (let i = 0; i < keys.length; i++) {
+        let key = keys[i], n = nodes[key];
+        let percent = 0;
+        if (n.count > 0) {
+            n.timer += dt; percent = (n.timer / getNodeSpeed(key)) * 100;
+            if (percent >= 100) { 
+                n.timer = 0; 
+                let cycleGain = n.count * n.payout * globalMult;
+                cash += cycleGain; 
+                percent = 0; 
+                if (cycleGain > 0 && Math.random() < 0.25) {
+                    spawnToast(`+$${formatNum(cycleGain)}`, "var(--text-accent)", document.getElementById('matrix-panel'));
+                }
+            }
+        }
+        let bar = document.getElementById('bar' + key);
+        if(bar) bar.style.width = percent + '%';
+    }
+    if(cashDisplay) cashDisplay.innerText = '$' + formatNum(cash);
+    if(epsDisplay) epsDisplay.innerText = 'NET INCOME: $' + formatNum(calculateEPS()) + '/sec';
+    if(multDisplay) multDisplay.innerText = 'GLOBAL SCALING EFFICIENCY: ' + formatNum(globalMult) + 'x GLOBAL MULTIPLIER';
+    // 1. Calculate how many tokens are available to claim (minimum 1 to show next target milestone)
+    let pendingTokens = calculatePendingTokens();
+    let targetTokens = pendingTokens > 0 ? pendingTokens + 1 : 1;
+    let targetCash = 0;
+
+    // 2. Accumulate the total tiered cost of all available tokens combined using the lifetime tracker
+    for (let i = 0; i < targetTokens; i++) {
+        targetCash += basePrestigeRequirement * Math.pow(2, totalTokensEarned + i);
+    }
+
+    // 3. Update the text to display the cumulative cash target for the max claimable tokens
+    if(prestigeDisplay) {
+        prestigeDisplay.innerText = 'TOKEN BANK: ' + formatNum(prestigeTokens) + ' | TARGET: $' + formatNum(targetCash) + ' FOR ' + targetTokens + (targetTokens === 1 ? ' TOKEN' : ' TOKENS');
+    }
+
+    let lowestPerkCost = Math.min(perks.X.cost, perks.Y.cost, perks.Z.cost);
+    let currentReq = basePrestigeRequirement * Math.pow(2, totalTokensEarned); // Threshold check for opening shop panel
+
+    if (cash >= currentReq || prestigeTokens >= lowestPerkCost) { 
+        if(shopPanel) shopPanel.style.display = 'flex'; 
+        if(prestigeBtn) {
+            prestigeBtn.style.display = 'block'; 
+            prestigeBtn.disabled = pendingTokens <= 0; 
+            prestigeBtn.innerText = 'INITIATE QUANTUM PRESTIGE RESET (CLAIM ' + formatNum(pendingTokens) + (pendingTokens === 1 ? ' TOKEN)' : ' TOKENS)');
+        }
+    } else { 
+        if(prestigeBtn) prestigeBtn.style.display = 'none'; 
+        if(shopPanel) shopPanel.style.display = 'none'; 
+    }
+    refreshShopLabels();
+    
+    let spX = document.getElementById('shop-perkX');
+    let spY = document.getElementById('shop-perkY');
+    let spZ = document.getElementById('shop-perkZ');
+    if(spX) spX.disabled = prestigeTokens < perks.X.cost;
+    if(spY) spY.disabled = prestigeTokens < perks.Y.cost;
+    if(spZ) spZ.disabled = prestigeTokens < perks.Z.cost;
+
+    for (let i = 0; i < keys.length; i++) {
+        let key = keys[i], n = nodes[key], bulkCost = getBulkPurchasePreview(key);
+        let bUp = document.getElementById('buy-up' + key);
+        if(bUp) bUp.disabled = cash < n.cost;
+        let btnAll = document.getElementById('all-up' + key);
+        if(btnAll) {
+            btnAll.disabled = cash < n.cost; 
+            btnAll.innerText = 'ALL ($' + formatNum(bulkCost) + ')';
+        }
+    }
+    requestAnimationFrame(gameLoop);
+}
+
+setInterval(() => {
+    if (blockShockEvents) return;
+    if (isShockActive === 0) {
+        shockTimer--; 
+        if(shockCountdown) shockCountdown.innerText = 'NEXT SHOCK: ' + shockTimer + 's';
+        if (shockTimer <= 0) { 
+            isShockActive = 1; 
+            shockTimer = getShockSafetyWindow(); 
+            if(shockLabel) shockLabel.innerText = "🚨 VOLATILITY DETECTED 🚨"; 
+            if(shockCountdown) shockCountdown.innerText = "PENALTY IN: " + shockTimer + "s"; 
+            if(shockActions) shockActions.style.display = 'flex'; 
+            shockType = Math.random() > 0.5 ? 1 : 2; 
+            logMessage("MARKET EVENT: Position alignment forced!"); 
+        }
+    } else {
+        shockTimer--; 
+        if(shockCountdown) shockCountdown.innerText = "PENALTY IN: " + shockTimer + "s";
+        if (shockTimer <= 0) { 
+            let penalty = cash * 0.40; 
+            cash -= penalty; 
+            if (cash < 0) cash = 0; 
+            triggerVisualFeedback(false, "WINDOW EXPIRED: Liquidated -$" + formatNum(penalty)); 
+        }
+    }
+}, 1000);
+
+function triggerVisualFeedback(type, message) {
+    blockShockEvents = true; isShockActive = 0; if(shockActions) shockActions.style.display = 'none';
+    
+    // 1. Handle Orange Firewall Mitigation
+    if (type === 'orange' || type === 'warning') {
+        if(leftPanel) leftPanel.classList.add('flash-warning'); 
+        if(rightPanel) rightPanel.classList.add('flash-warning'); 
+        if(shockBox) shockBox.style.borderColor = '#ff7f00'; 
+        if(shockLabel) shockLabel.innerText = "🛡️ [ FIREWALL ACTIVE ] 🛡️"; 
+        if(shockCountdown) {
+            shockCountdown.style.color = '#ff7f00'; 
+            shockCountdown.innerText = "RISK EXPOSURE BUFFERED";
+        }
+    // 2. Handle Green Success Vector
+    } else if (type === true || type === 'success') {
+        if(leftPanel) leftPanel.classList.add('flash-success'); 
+        if(rightPanel) rightPanel.classList.add('flash-success'); 
+        if(shockBox) shockBox.style.borderColor = 'var(--text-accent)';
+        if(shockLabel) shockLabel.innerText = "💎 [ SYSTEM GAIN ] 💎"; 
+        if(shockCountdown) {
+            shockCountdown.style.color = 'var(--text-accent)'; 
+            shockCountdown.innerText = "ALGORITHMIC FORECAST HIT";
+        }
+        playSound('win'); spawnCelebration(); spawnToast("CRITICAL GAIN!", "var(--text-accent)");
+    // 3. Handle Red Liquidation Failure
+    } else {
+        if(leftPanel) leftPanel.classList.add('flash-failure'); 
+        if(rightPanel) rightPanel.classList.add('flash-failure'); 
+        if(shockBox) shockBox.style.borderColor = '#ff3333'; 
+        if(shockLabel) shockLabel.innerText = "🚨 [ SYSTEM LIQUIDATION ] 🚨";
+        if(shockCountdown) {
+            shockCountdown.style.color = '#ff3333'; 
+            shockCountdown.innerText = "MARGIN CALL COLLATERAL LOSS"; 
+        }
+        playSound('lose'); spawnToast("LIQUIDATED!", "#ff3333");
+    }
+    
+    logMessage(message);
+    
+    setTimeout(() => {
+        // Clear all possible flash classes including the new warning class
+        if(leftPanel) leftPanel.classList.remove('flash-success', 'flash-failure', 'flash-warning'); 
+        if(rightPanel) rightPanel.classList.remove('flash-success', 'flash-failure', 'flash-warning');
+        
+        if(shockBox) shockBox.style.borderColor = '#333'; 
+        if(shockCountdown) shockCountdown.style.color = '#ff3333'; 
+        shockTimer = 10; 
+        if(shockLabel) shockLabel.innerText = "MARKET EQUILIBRIUM"; 
+        if(shockCountdown) shockCountdown.innerText = 'NEXT SHOCK: 10s'; 
+        blockShockEvents = false;
+    }, 1500);
+}
+function evaluateShock(choice) {
+    if (isShockActive === 0 || blockShockEvents) return;
+    if (choice === shockType) { let win = cash * 0.5; cash += win; triggerVisualFeedback(true, "SUCCESS: Hedge hit! Earned +$" + formatNum(win)); }
+    else {
+        if (Math.random() < 0.5) {
+            let reducedLoss = cash * 0.05; cash -= reducedLoss; playSound('buy');
+            spawnToast("💥 SHIELD BUFFERED CRASH! 💥", "#ff7f00");
+            triggerVisualFeedback('orange', "NEAR MISS: Firewall active! Lost only $" + formatNum(reducedLoss));
+            return;
+        }
+        let loss = cash * 0.3; cash -= loss; if (cash < 0) cash = 0; triggerVisualFeedback(false, "FAILURE: Liquidation! Lost $" + formatNum(loss));
+    }
+}
+
+if(btnShort) btnShort.addEventListener('click', () => { evaluateShock(1); });
+if(btnLong) btnLong.addEventListener('click', () => { evaluateShock(2); });
+
+if(btnClick) btnClick.addEventListener('click', (e) => {
+    clickCombo++; clearTimeout(comboTimer); comboTimer = setTimeout(() => { clickCombo = 0; }, 1500);
+    let isCrit = Math.random() < (0.05 + (clickCombo * 0.01));
+    let comboMultiplier = 1 + Math.min(clickCombo * 0.1, 5.0);
+    if (isCrit) {
+        let critGain = 10.0 * comboMultiplier; cash += critGain; playSound('crit');
+        if (sfxVolume > 0 && audioCtx && audioCtx.state !== 'suspended') {
+            let synth = audioCtx.createOscillator(), g = audioCtx.createGain();
+            synth.connect(g); g.connect(audioCtx.destination);
+            synth.frequency.setValueAtTime(800 + (clickCombo * 20), audioCtx.currentTime);
+            g.gain.setValueAtTime(0.1 * sfxVolume, audioCtx.currentTime); synth.start(); synth.stop(audioCtx.currentTime + 0.1);
+        }
+        spawnBurstAt(e.clientX, e.clientY, ['⚡', '💎', '🔥', '✨']);
+        spawnToast(`!! CRITICAL COMBO x${clickCombo} !! +$${formatNum(critGain)}`, "#cc00ff", leftPanel);
+        logMessage(`CRITICAL COMBO HIT: +$${formatNum(critGain)}`);
+    } else {
+        let normalGain = 1.0 * comboMultiplier; cash += normalGain; playSound('click');
+        spawnBurstAt(e.clientX, e.clientY, ['💰', '📈']);
+        if(clickCombo > 5) { spawnToast(`Combo x${clickCombo}!`, "var(--border-glow)", leftPanel); }
+        logMessage("Manual pipeline ping: +$" + formatNum(normalGain));
+    }
+});
+
+if(prestigeBtn) prestigeBtn.addEventListener('click', () => {
+    let earnedTokens = calculatePendingTokens(); if (earnedTokens <= 0) return;
+    totalTokensEarned += earnedTokens;
+    prestigeTokens += earnedTokens; resetCount++; cash = 0.0; isShockActive = 0; blockShockEvents = false; shockTimer = 10;
+    if(shockLabel) shockLabel.innerText = "MARKET EQUILIBRIUM"; 
+    if(shockCountdown) shockCountdown.innerText = 'NEXT SHOCK: 10s'; 
+    if(shockActions) shockActions.style.display = 'none'; 
+    playSound('win');
+    let keys = ['A', 'B', 'C', 'D', 'E'];
+    for (let i = 0; i < keys.length; i++) {
+        let key = keys[i]; 
+        nodes[key].count = 0; 
+        nodes[key].timer = 0.0; 
+        nodes[key].cost = nodes[key].baseCost;
+        nodes[key].payout = nodes[key].basePayout;
+        let bUp = document.getElementById('buy-up' + key);
+        if(bUp) bUp.innerText = 'Buy Node ' + key + ' ($' + formatNum(nodes[key].baseCost) + ')';
+        let bar = document.getElementById('bar' + key);
+        if(bar) bar.style.width = '0%';
+    }
+    logMessage("QUANTUM RESET COMPLETE: Earned " + formatNum(earnedTokens) + " Tokens. Prices updated."); refreshAllRows();
+});
+
+function setupPerk(id, key, msg) {
+    let targetEl = document.getElementById(id);
+    if (targetEl) {
+        targetEl.addEventListener('click', () => {
+            if (prestigeTokens >= perks[key].cost) { prestigeTokens -= perks[key].cost; perks[key].lvl++; perks[key].cost = perks[key].baseCost * (perks[key].lvl + 1); playSound('buy'); logMessage(msg); refreshAllRows(); }
+        });
+    }
+}
+setupPerk('shop-perkX', 'X', "UPGRADED: Synergy System Model optimized.");
+setupPerk('shop-perkY', 'Y', "UPGRADED: Cycle Reclock architecture accelerated.");
+setupPerk('shop-perkZ', 'Z', "UPGRADED: Hedge Extension safety alarm expanded.");
+
+function setupPurchaseMechanics(key) {
+    let btn = document.getElementById('buy-up' + key), btnAll = document.getElementById('all-up' + key), inflation = nodes[key].inflation;
+    
+    function checkMilestone(n, priorCount) {
+        let milestones = [5, 10, 25, 50, 100, 250, 500]; 
+        for (let m of milestones) {
+            if (priorCount < m && n.count >= m) { 
+                n.payout *= 2.0; 
+                playSound('win'); 
+                spawnCelebration(); 
+                spawnToast(`✨ NODE ${key} MILESTONE: ${m}! (2x OUTPUT) ✨`, "var(--text-accent)", rightPanel); 
+                logMessage(`SYSTEM MILESTONE: Node ${key} efficiency permanently doubled at tier ${m}!`); 
+            }
+        }
+    }
+
+    if(btn) {
+        btn.addEventListener('click', () => {
+            let n = nodes[key]; if (cash >= n.cost) { cash -= n.cost; let old = n.count; n.count++; n.cost = Math.floor(n.cost * inflation); btn.innerText = 'Buy Node ' + key + ' ($' + formatNum(n.cost) + ')'; playSound('buy'); logMessage("Upgraded single track: Node " + key); checkMilestone(n, old); refreshAllRows(); }
+        });
+    }
+    if(btnAll) {
+        btnAll.addEventListener('click', () => {
+            let n = nodes[key], bought = 0, old = n.count;
+            while (cash >= n.cost) { cash -= n.cost; n.count++; bought++; n.cost = Math.floor(n.cost * inflation); }
+            if (bought > 0) { if(btn) btn.innerText = 'Buy Node ' + key + ' ($' + formatNum(n.cost) + ')'; playSound('buy'); logMessage("Bulk Acquisition: Compiled +" + bought + " Node " + key + " assets."); checkMilestone(n, old); refreshAllRows(); }
+        });
+    }
+}
+['A', 'B', 'C', 'D', 'E'].forEach(setupPurchaseMechanics);
+// Function to export crucial variables to localStorage
+function saveGameProgress() {
+    const gameState = {
+        cash: cash,
+        prestigeTokens: prestigeTokens,
+        resetCount: resetCount,
+        totalTokensEarned: totalTokensEarned,
+        perks: {
+            X: { lvl: perks.X.lvl, cost: perks.X.cost },
+            Y: { lvl: perks.Y.lvl, cost: perks.Y.cost },
+            Z: { lvl: perks.Z.lvl, cost: perks.Z.cost }
+        },
+        nodes: {
+            A: { count: nodes.A.count, cost: nodes.A.cost, payout: nodes.A.payout },
+            B: { count: nodes.B.count, cost: nodes.B.cost, payout: nodes.B.payout },
+            C: { count: nodes.C.count, cost: nodes.C.cost, payout: nodes.C.payout },
+            D: { count: nodes.D.count, cost: nodes.D.cost, payout: nodes.D.payout },
+            E: { count: nodes.E.count, cost: nodes.E.cost, payout: nodes.E.payout }
+        }
+    };
+    localStorage.setItem('gridlock_save_data', JSON.stringify(gameState));
+    logMessage("SYSTEM DATA: Progress backed up successfully.");
+
+    // VISUAL FEEDBACK: Flash the entire button using its active theme color
+    const saveBtn = document.getElementById('save-progress-btn');
+    if (saveBtn) {
+        // 1. Get the computed styles to read the exact theme color applied by var(--text-accent)
+        const computedStyle = window.getComputedStyle(saveBtn);
+        const activeThemeColor = computedStyle.borderColor || 'var(--text-accent)';
+        
+        saveBtn.style.backgroundColor = activeThemeColor;
+        saveBtn.style.borderColor = activeThemeColor;
+        saveBtn.style.color = '#000000';
+        saveBtn.style.boxShadow = '0 0 15px ' + activeThemeColor;
+        saveBtn.style.transition = 'all 0.05s ease';
+
+        setTimeout(() => {
+            saveBtn.style.transition = 'all 0.6s ease';
+            saveBtn.style.backgroundColor = "transparent";
+            saveBtn.style.borderColor = "var(--text-accent)";
+            saveBtn.style.color = "var(--text-accent)";
+            saveBtn.style.boxShadow = "none";
+        }, 600);
+    }
+}
+// Function to wipe tracking variables clean and clear localStorage
+function resetGameProgress() {
+    if (confirm("CRITICAL WARNING: This will permanently wipe your cash, nodes, upgrades, and prestige tokens. Proceed?")) {
+        localStorage.removeItem('gridlock_save_data');
+        
+        // Reset local memory state to default values
+        cash = 0.0;
+        prestigeTokens = 0;
+        resetCount = 0;
+        totalTokensEarned = 0;
+        
+        perks.X.lvl = 0; perks.X.cost = perks.X.baseCost;
+        perks.Y.lvl = 0; perks.Y.cost = perks.Y.baseCost;
+        perks.Z.lvl = 0; perks.Z.cost = perks.Z.baseCost;
+        
+        ['A', 'B', 'C', 'D', 'E'].forEach(key => {
+            nodes[key].count = 0;
+            nodes[key].timer = 0.0;
+            nodes[key].cost = nodes[key].baseCost;
+            nodes[key].payout = nodes[key].basePayout;
+            let bar = document.getElementById('bar' + key);
+            if (bar) bar.style.width = '0%';
+        });
+        
+        refreshAllRows();
+        logMessage("SYSTEM DATA: Memory registers scrubbed. Clean slate.");
+    }
+}
+
+// Link mechanics to button UI nodes
+document.getElementById('save-progress-btn').addEventListener('click', saveGameProgress);
+document.getElementById('reset-progress-btn').addEventListener('click', resetGameProgress);
+refreshAllRows();
+
+document.getElementById('settings-toggle').addEventListener('click', () => {
+    const settingsPanel = document.getElementById('settings-panel');
+    const logPanel = document.getElementById('log');
+    const toggleBtn = document.getElementById('settings-toggle');
+    
+    if (settingsPanel.style.display === 'none') {
+        settingsPanel.style.display = 'grid';
+        logPanel.style.display = 'none';
+        toggleBtn.innerHTML = '📜 VIEW LOG';
+    } else {
+        settingsPanel.style.display = 'none';
+        logPanel.style.display = 'block';
+        toggleBtn.innerHTML = '⚙️ SETTINGS';
+    }
+});
+
+// Force slider visual states to match programmatic variable states on boot
+updateBgmVolume(0);
+updateSfxVolume(0);
+
+requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>
