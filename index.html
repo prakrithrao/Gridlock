@@ -906,7 +906,7 @@ setInterval(() => {
         shockTimer--; 
         if(shockCountdown) shockCountdown.innerText = "PENALTY IN: " + shockTimer + "s";
         if (shockTimer <= 0) { 
-            let penalty = cash * 0.40; 
+            let penalty = cash * 0.5; 
             cash -= penalty; 
             if (cash < 0) cash = 0; 
             triggerVisualFeedback(false, "WINDOW EXPIRED: Liquidated -$" + formatNum(penalty)); 
@@ -976,7 +976,7 @@ function evaluateShock(choice) {
             triggerVisualFeedback('orange', "NEAR MISS: Firewall active! Lost only $" + formatNum(reducedLoss));
             return;
         }
-        let loss = cash * 0.3; cash -= loss; if (cash < 0) cash = 0; triggerVisualFeedback(false, "FAILURE: Liquidation! Lost $" + formatNum(loss));
+        let loss = cash * 0.2; cash -= loss; if (cash < 0) cash = 0; triggerVisualFeedback(false, "FAILURE: Liquidation! Lost $" + formatNum(loss));
     }
 }
 
