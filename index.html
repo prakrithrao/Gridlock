@@ -348,7 +348,7 @@ select, input[type="checkbox"] {
             <div style="font-size:12px; font-weight: bold; color:var(--prestige-color); text-align:center; margin-bottom:5px;">[ PERK SELECTION TERMINAL ]</div>
             <div class="shop-row"><span id="label-perkZ">LEVEL 1 HEDGE EXTENSION (6.00S ALARM)</span><button class="btn" id="shop-perkZ" style="border-color:var(--prestige-color); color:var(--prestige-color); padding: 4px;">1 TKN</button></div>
             <div class="shop-row"><span id="label-perkX">LEVEL 1 SYSTEM SYNERGY (1.20X OUTPUT)</span><button class="btn" id="shop-perkX" style="border-color:var(--prestige-color); color:var(--prestige-color); padding: 4px;">2 TKNS</button></div>
-            <div class="shop-row"><span id="label-perkY">LEVEL 1 CYCLE RECLOCK (0.90X TIME)</span><button class="btn" id="shop-perkY" style="border-color:var(--prestige-color); color:var(--prestige-color); padding: 4px;">3 TKNS</button></div>
+            <div class="shop-row"><span id="label-perkY">LEVEL 1 CYCLE RECLOCK (0.90X DURATION)</span><button class="btn" id="shop-perkY" style="border-color:var(--prestige-color); color:var(--prestige-color); padding: 4px;">3 TKNS</button></div>
         </div>
         
         <div id="shock-box">
@@ -595,7 +595,7 @@ function refreshShopLabels() {
     let btnZ = document.getElementById('shop-perkZ');
 
     if(lblX) lblX.innerText = `LEVEL ${tX} SYSTEM SYNERGY (${formatNum(1.0 + tX * 0.20)}X OUTPUT)`;
-    if(lblY) lblY.innerText = `LEVEL ${tY} CYCLE RECLOCK (${formatNum(Math.pow(0.90, tY))}X TIME)`;
+    if(lblY) lblY.innerText = `LEVEL ${tY} CYCLE RECLOCK (${formatNum(Math.pow(0.90, tY))}X DURATION)`;
     if(lblZ) lblZ.innerText = `LEVEL ${tZ} HEDGE EXTENSION (${formatNum(4 + tZ * 2)}S ALARM)`;
     if(btnX) btnX.innerText = `${formatNum(perks.X.cost)} TKN${perks.X.cost > 1 ? 'S' : ''}`;
     if(btnY) btnY.innerText = `${formatNum(perks.Y.cost)} TKNS`;
