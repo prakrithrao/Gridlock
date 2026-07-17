@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>THE GRIDLOCK // Safe v4.7</title>
+<title>THE GRIDLOCK // Safe v4.8</title>
 <style>
 :root {
     --border-glow: #00f0ff;
     --text-accent: #00ff66;
     --prestige-color: #cc00ff;
+    --surge-color: #ff0055;
 }
 body {
     background-color: #0a0a0f;
@@ -62,6 +63,10 @@ select, input[type="checkbox"] {
     flex-direction: column;
     transition: all 0.15s ease;
 }
+.panel.flash-surge {
+    border-color: var(--surge-color);
+    box-shadow: inset 0 0 30px rgba(255, 0, 85, 0.3);
+}
 .panel.flash-success {
     border-color: var(--text-accent) !important;
     box-shadow: inset 0 0 20px rgba(0, 255, 102, 0.4);
@@ -69,8 +74,36 @@ select, input[type="checkbox"] {
 }
 .panel.flash-failure {
     border-color: #ff3333 !important;
-    box-shadow: inset 0 0 20px rgba(255, 51, 51, 0.4);
-    animation: screenShake 0.3s ease;
+    box-shadow: inset 0 0 20px rgba(255, 51, 51, 0.2);
+    animation: screenShake 0.25s ease;
+}
+#surge-bar-container {
+    background: #12121a;
+    height: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #1a1b2f;
+}
+#surge-bar {
+    height: 100%;
+    background: var(--surge-color);
+    width: 0%;
+    box-shadow: 0 0 8px var(--surge-color);
+    transition: width 0.1s linear;
+}
+.btn-surge {
+    border-color: var(--surge-color);
+    color: var(--surge-color);
+    width: 100%;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+    font-size: 11px;
+    position: relative;
+    overflow: hidden;
+}
+.btn-surge:hover:not(:disabled) {
+    background: rgba(255, 0, 85, 0.15);
+    color: #fff;
+    box-shadow: 0 0 20px var(--surge-color);
 }
 .panel.flash-warning {
     border-color: #ff7f00 !important;
@@ -91,7 +124,7 @@ select, input[type="checkbox"] {
 .sub-stat-display {
     font-size: 13px;
     color: #888;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -289,10 +322,15 @@ select, input[type="checkbox"] {
 </div>
 <div id="game-container">    
     <div class="panel" id="left-panel">
-        <h2 style="margin-top: 0; margin-bottom: 6px;">Balance</h2>
+        <h2 style="margin-top: 0; margin-bottom: 3px;">Balance</h2>
         <div class="stat-display" id="cash-display">$0.00</div>
         <div class="sub-stat-display" id="eps-display">NET INCOME: $0.00/sec</div>
-        <button class="btn" id="manual-click" style="width: 100%; margin-bottom: 15px;">Manual Override (+$$$)</button>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; margin-bottom: 3px; color: var(--surge-color);">
+            <span id="surge-status">GRID SURGE CHARGE: 0%</span>
+            <span id="surge-timer" style="display:none;">ACTIVE: 10s</span>
+        </div>
+        <div id="surge-bar-container"><div id="surge-bar"></div></div>
+        <button class="btn btn-surge" id="manual-btn">Manual Override (+$$$)</button>
         
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <h3 style="margin: 0;">Market Acquisition</h3>
@@ -373,7 +411,7 @@ select, input[type="checkbox"] {
         <h2 style="color: var(--border-glow); margin: 0 0 5px 0; letter-spacing: 2px; text-align: center;">[ SYSTEM MANUAL // HOW TO PLAY ]</h2>
         <p style="margin: 0; line-height: 1.5; font-size: 13px;">👋 <b>Welcome to The Gridlock!</b> Your mission is to build an automated financial cyberpunk empire while surviving brutal market volatility.</p>
         <hr style="border: 0; border-top: 1px dashed #333; width: 100%; margin: 4px 0;">
-        <p style="margin: 0; line-height: 1.5; font-size: 13px;"><b style="color: var(--text-accent);">🖱️ 1. MANUAL OVERRIDE:</b> Click the override button to generate starter cash! Click rapidly to build your <b>Combo Multiplier</b> and trigger massive <b>Critical Hits</b>!</p>
+        <p style="margin: 0; line-height: 1.5; font-size: 13px;"><b style="color: var(--text-accent);">🖱️ 1. MANUAL OVERRIDE:</b> Click the override button to generate starter cash! Click rapidly to build your <b>Combo Multiplier</b>, trigger massive <b>Critical Hits</b> and build up your <b>Grid Surge Meter</b> for a 10 second Surge of <b>5x speed and double payouts</b>!</p>
         <p style="margin: 0; line-height: 1.5; font-size: 13px;"><b style="color: #00f0ff;">🤖 2. AUTOMATE CASH FLOW:</b> Spend your capital on passive Nodes (A through E). They generate continuous income. Reach milestone quantities (1, 5, 10, 25, 50, etc.) to permanently double a Node's output!</p>
         <p style="margin: 0; line-height: 1.5; font-size: 13px;"><b style="color: #ff3333;">🚨 3. SURVIVE MARKET SHOCKS:</b> Every 10 seconds, a Volatility Alarm sounds! Predict the market vector by clicking <b>SHORT (-50%)</b> or <b>LONG (+50%)</b>. Guess right for massive cash bonuses, but guess wrong and get liquidated!</p>
         <p style="margin: 0; line-height: 1.5; font-size: 13px;"><b style="color: var(--prestige-color);">💎 4. QUANTUM PRESTIGE:</b> Reach target parameters to initiate a Quantum Reset. This reboots your cash and nodes, but rewards you with permanent <b>Shop Tokens</b> to spend on game-breaking perks!</p>
@@ -391,6 +429,9 @@ let resetCount = 0;
 let blockShockEvents = false;
 let clickCombo = 0;
 let comboTimer = null;
+let surgeCharge = 0.0;
+let surgeActive = false;
+let surgeTimer = 0.0;
 let totalTokensEarned = 0;
 
 let basePrestigeRequirement = 100000;
@@ -494,7 +535,6 @@ const multDisplay = document.getElementById('mult-display');
 const prestigeDisplay = document.getElementById('prestige-display');
 const prestigeBtn = document.getElementById('prestige-btn');
 const shopPanel = document.getElementById('shop-panel');
-const btnClick = document.getElementById('manual-click');
 const shockLabel = document.getElementById('shock-label');
 const shockCountdown = document.getElementById('shock-countdown');
 const shockActions = document.getElementById('shock-actions');
@@ -542,13 +582,21 @@ function calculatePendingTokens() {
     }
     return count;
 }
-function getGlobalMultiplier() { return 1.0 + (nodes.A.count + nodes.B.count + nodes.C.count + nodes.D.count + nodes.E.count) * 0.02 + perks.X.lvl * 0.20; }
+function getGlobalMultiplier() {
+    let mult = 1.0 + (nodes.A.count + nodes.B.count + nodes.C.count + nodes.D.count + nodes.E.count) * 0.02 + perks.X.lvl * 0.20;
+    if (surgeActive) mult *= 2.0; // Double standard payouts during surge
+    return mult;
+}
 function getNodeSpeed(key) { return nodes[key].speed * Math.pow(0.90, perks.Y.lvl); }
 function getShockSafetyWindow() { return 4 + (perks.Z.lvl * 2); }
 
 function calculateEPS() {
     let mult = getGlobalMultiplier();
-    return (['A', 'B', 'C', 'D', 'E'].reduce((acc, k) => acc + (nodes[k].count * nodes[k].payout / getNodeSpeed(k)), 0)) * mult;
+    return (['A', 'B', 'C', 'D', 'E'].reduce((acc, k) => {
+        let activeSpeed = nodes[k].speed * Math.pow(0.90, perks.Y.lvl);
+        if (surgeActive) activeSpeed /= 5.0; // 5x speed boost during surge
+        return acc + (nodes[k].count * nodes[k].payout / activeSpeed);
+    }, 0)) * mult;
 }
 
 function updateRowDisplay(key) {
@@ -584,17 +632,14 @@ function refreshAllRows() {
         let rateLabel = document.getElementById('rate-' + key);
         if (rateLabel) {
             if (!n.count || n.count <= 0) {
-                rateLabel.innerText = "Status: OFFLINE";
-                rateLabel.style.color = "#666"; 
+                rateLabel.innerText = "OFFLINE";
+                rateLabel.style.color = "#555870";
             } else {
-                // Get the accurate dynamic speed using your engine's function
-                let activeSpeed = (typeof getNodeSpeed === 'function') ? getNodeSpeed(key) : n.speed;
-                
-                // Exact formula: (count * payout / speed) * global_multiplier
+                let activeSpeed = n.speed * Math.pow(0.90, perks.Y.lvl);
+                if (surgeActive) activeSpeed /= 5.0; // Adjust rate label calculations
                 let totalIncomePerSec = (n.count * n.payout / activeSpeed) * globalMult;
-                
                 rateLabel.innerText = "$" + formatNum(totalIncomePerSec) + "/s";
-                rateLabel.style.color = "var(--text-accent)"; 
+                rateLabel.style.color = "var(--text-accent)";
             }
         }
     });
@@ -711,7 +756,23 @@ function playSound(type) {
     else if (type === 'crit') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(2093.00, audioCtx.currentTime + 0.3); gain.gain.setValueAtTime(0.15 * sfxVolume, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.3); osc.start(); osc.stop(audioCtx.currentTime + 0.3); }
     else if (type === 'buy') { osc.type = 'triangle'; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.setValueAtTime(450, audioCtx.currentTime + 0.05); osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.1 * sfxVolume, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.18); osc.start(); osc.stop(audioCtx.currentTime + 0.18); }
     else if (type === 'win') { osc.type = 'triangle'; let t = audioCtx.currentTime; osc.frequency.setValueAtTime(523.25, t); osc.frequency.setValueAtTime(659.25, t + 0.08); osc.frequency.setValueAtTime(783.99, t + 0.16); osc.frequency.setValueAtTime(1046.50, t + 0.24); gain.gain.setValueAtTime(0.18 * sfxVolume, t); gain.gain.linearRampToValueAtTime(0.001, t + 0.45); osc.start(); osc.stop(t + 0.45); }
-    else if (type === 'lose') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(60, audioCtx.currentTime + 0.5); gain.gain.setValueAtTime(0.25 * sfxVolume, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.5); osc.start(); osc.stop(audioCtx.currentTime + 0.5); }
+    else if (type === 'lose') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(250, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 0.4);
+        gain.gain.setValueAtTime(0.2 * sfxVolume, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.4); }
+    else if (type === 'surge') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1600, audioCtx.currentTime + 0.6);
+        gain.gain.setValueAtTime(0.2 * sfxVolume, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.6);
+    }
 }
 
 function startBGM() {
@@ -811,13 +872,71 @@ window.addEventListener('keydown', (e) => {
 });
 
 function gameLoop(now) {
-    let dt = (now - lastTime) / 1000; lastTime = now;
-    let globalMult = getGlobalMultiplier(), keys = ['A', 'B', 'C', 'D', 'E'];
+    let dt = (now - lastTime) / 1000;
+    lastTime = now;
+    if (surgeActive) {
+        surgeTimer -= dt;
+        const surgeTimerEl = document.getElementById('surge-timer');
+        const surgeBar = document.getElementById('surge-bar');
+        const activateSurgeBtn = document.getElementById('manual-btn');
+        const surgeStatus = document.getElementById('surge-status');
+        if (surgeTimerEl) surgeTimerEl.innerText = `ACTIVE: ${Math.ceil(surgeTimer)}s`;
+        if (surgeBar) surgeBar.style.width = ((surgeTimer / 10.0) * 100) + '%';
+        if (surgeTimer <= 0) {
+            surgeActive = false;
+            if (surgeStatus) {
+                surgeStatus.style.display = 'inline';
+                surgeStatus.innerText = `GRID SURGE CHARGE: ${Math.floor(Math.min(100, surgeCharge))}%`;
+                if (surgeBar) surgeBar.style.width = Math.min(100, surgeCharge) + '%';
+            }
+            if (surgeTimerEl) surgeTimerEl.style.display = 'none';
+            leftPanel.classList.remove('flash-surge');
+            rightPanel.classList.remove('flash-surge');
+            if (surgeCharge >= 100) {
+                if (activateSurgeBtn) {
+                    activateSurgeBtn.innerText = "⌛ INITIATE GRID SURGE (READY!)";
+                    activateSurgeBtn.style.borderColor = "var(--surge-color)";
+                    activateSurgeBtn.style.color = "var(--surge-color)";
+                    activateSurgeBtn.style.boxShadow = "0 0 10px rgba(255, 0, 85, 0.3)"
+                }
+                spawnToast("SURGE READY!", "var(--surge-color)");
+            }
+            else {
+                if (activateSurgeBtn) {
+                    activateSurgeBtn.innerText = "Manual Override (+$$$)";
+                    activateSurgeBtn.style.borderColor = "var(--border-glow)";
+                    activateSurgeBtn.style.color = "var(--border-glow)";
+                    activateSurgeBtn.style.boxShadow = "none";
+                }
+            }
+            logMessage("GRID SURGE DISSIPATED: Mainframe returned to standard velocity.");
+            refreshAllRows();
+        }
+    }
+    else {
+        if (surgeCharge >= 100) {
+            const activateSurgeBtn = document.getElementById('manual-btn');
+            if (activateSurgeBtn) {
+                activateSurgeBtn.innerText = "⌛ INITIATE GRID SURGE (READY!)";
+                activateSurgeBtn.style.borderColor = "var(--surge-color)";
+                activateSurgeBtn.style.color = "var(--surge-color)";
+                activateSurgeBtn.style.boxShadow = "0 0 10px rgba(255, 0, 85, 0.3)"
+            }
+            spawnToast("SURGE READY!", "var(--surge-color)");
+        }
+    }
+
+    let globalMult = getGlobalMultiplier();
+    let keys = ['A', 'B', 'C', 'D', 'E'];
     for (let i = 0; i < keys.length; i++) {
-        let key = keys[i], n = nodes[key];
+        let key = keys[i];
+        let n = nodes[key];
         let percent = 0;
         if (n.count > 0) {
-            n.timer += dt; percent = (n.timer / getNodeSpeed(key)) * 100;
+            n.timer += dt;
+            let activeSpeed = n.speed * Math.pow(0.90, perks.Y.lvl);
+            if (surgeActive) activeSpeed /= 5.0; // 5x faster processing speed
+            percent = (n.timer / activeSpeed) * 100;
             if (percent >= 100) { 
                 n.timer = 0; 
                 let cycleGain = n.count * n.payout * globalMult;
@@ -1001,7 +1120,7 @@ function triggerVisualFeedback(type, message) {
 }
 function evaluateShock(choice) {
     if (isShockActive === 0 || blockShockEvents) return;
-    if (choice === shockType) { let win = cash * 0.5; cash += win; triggerVisualFeedback(true, "SUCCESS: Hedge hit! Earned +$" + formatNum(win)); }
+    if (choice === shockType) { let win = cash; cash += win; triggerVisualFeedback(true, "SUCCESS: Hedge hit! Earned +$" + formatNum(win)); }
     else {
         if (Math.random() < 0.5) {
             let reducedLoss = cash * 0.05; cash -= reducedLoss; playSound('buy');
@@ -1016,36 +1135,32 @@ function evaluateShock(choice) {
 if(btnShort) btnShort.addEventListener('click', () => { evaluateShock(1); });
 if(btnLong) btnLong.addEventListener('click', () => { evaluateShock(2); });
 
-if(btnClick) btnClick.addEventListener('click', (e) => {
-    clickCombo++; clearTimeout(comboTimer); comboTimer = setTimeout(() => { clickCombo = 0; }, 1500);
-    let isCrit = Math.random() < (0.05 + (clickCombo * 0.01));
-    let comboMultiplier = 1 + Math.min(clickCombo * 0.1, 5.0);
-    if (isCrit) {
-        let critGain = 10.0 * comboMultiplier; cash += critGain; playSound('crit');
-        if (sfxVolume > 0 && audioCtx && audioCtx.state !== 'suspended') {
-            let synth = audioCtx.createOscillator(), g = audioCtx.createGain();
-            synth.connect(g); g.connect(audioCtx.destination);
-            synth.frequency.setValueAtTime(800 + (clickCombo * 20), audioCtx.currentTime);
-            g.gain.setValueAtTime(0.1 * sfxVolume, audioCtx.currentTime); synth.start(); synth.stop(audioCtx.currentTime + 0.1);
-        }
-        spawnBurstAt(e.clientX, e.clientY, ['⚡', '💎', '🔥', '✨']);
-        spawnToast(`!! CRITICAL COMBO x${clickCombo} !! +$${formatNum(critGain)}`, "#cc00ff", leftPanel);
-        logMessage(`CRITICAL COMBO HIT: +$${formatNum(critGain)}`);
-    } else {
-        let normalGain = 1.0 * comboMultiplier; cash += normalGain; playSound('click');
-        spawnBurstAt(e.clientX, e.clientY, ['💰', '📈']);
-        if(clickCombo > 5) { spawnToast(`Combo x${clickCombo}!`, "var(--border-glow)", leftPanel); }
-        logMessage("Manual pipeline ping: +$" + formatNum(normalGain));
-    }
-});
-
 if(prestigeBtn) prestigeBtn.addEventListener('click', () => {
     let earnedTokens = calculatePendingTokens(); if (earnedTokens <= 0) return;
     totalTokensEarned += earnedTokens;
     prestigeTokens += earnedTokens; resetCount++; cash = 0.0; isShockActive = 0; blockShockEvents = false; shockTimer = 10;
     if(shockLabel) shockLabel.innerText = "MARKET EQUILIBRIUM"; 
     if(shockCountdown) shockCountdown.innerText = 'NEXT SHOCK: 10s'; 
-    if(shockActions) shockActions.style.display = 'none'; 
+    if(shockActions) shockActions.style.display = 'none';
+    surgeActive = false;
+    surgeCharge = 0.0;
+    const surgeBar = document.getElementById('surge-bar');
+    const surgeStatus = document.getElementById('surge-status');
+    const surgeTimerEl = document.getElementById('surge-timer');
+    const activateSurgeBtn = document.getElementById('manual-btn');
+    if (surgeBar) surgeBar.style.width = '0%';
+    if (surgeStatus) {
+        surgeStatus.innerText = "GRID SURGE CHARGE: 0%";
+        surgeStatus.style.display = 'inline';
+    }
+    if (surgeTimerEl) surgeTimerEl.style.display = 'none';
+    leftPanel.classList.remove('flash-surge');
+    if (activateSurgeBtn) {
+        activateSurgeBtn.innerText = "Manual Override (+$$$)";
+        activateSurgeBtn.style.borderColor = "var(--border-glow)";
+        activateSurgeBtn.style.color = "var(--border-glow)";
+        activateSurgeBtn.style.boxShadow = "none";
+    }
     playSound('win');
     let keys = ['A', 'B', 'C', 'D', 'E'];
     for (let i = 0; i < keys.length; i++) {
@@ -1174,6 +1289,25 @@ function resetGameProgress() {
         prestigeTokens = 0;
         resetCount = 0;
         totalTokensEarned = 0;
+        surgeActive = false;
+        surgeCharge = 0.0;
+        const surgeBar = document.getElementById('surge-bar');
+        const surgeStatus = document.getElementById('surge-status');
+        const surgeTimerEl = document.getElementById('surge-timer');
+        const activateSurgeBtn = document.getElementById('manual-btn');
+        if (surgeBar) surgeBar.style.width = '0%';
+        if (surgeStatus) {
+            surgeStatus.innerText = "GRID SURGE CHARGE: 0%";
+            surgeStatus.style.display = 'inline';
+        }
+        if (surgeTimerEl) surgeTimerEl.style.display = 'none';
+        leftPanel.classList.remove('flash-surge');
+        if (activateSurgeBtn) {
+            activateSurgeBtn.innerText = "Manual Override (+$$$)";
+            activateSurgeBtn.style.borderColor = "var(--border-glow)";
+            activateSurgeBtn.style.color = "var(--border-glow)";
+            activateSurgeBtn.style.boxShadow = "none";
+        }
         
         perks.X.lvl = 0; perks.X.cost = perks.X.baseCost;
         perks.Y.lvl = 0; perks.Y.cost = perks.Y.baseCost;
@@ -1206,6 +1340,71 @@ document.getElementById('toggle-buy-mode').addEventListener('click', () => {
     playSound('click');
 });
 refreshAllRows();
+
+document.getElementById('manual-btn').addEventListener('click', (e) => {
+    if (surgeCharge >= 100 && !surgeActive) {
+        surgeActive = true;
+        surgeTimer = 10.0;
+        surgeCharge -= 100;
+        const surgeStatus = document.getElementById('surge-status');
+        const surgeTimerEl = document.getElementById('surge-timer');
+        const activateSurgeBtn = document.getElementById('manual-btn');
+        if (surgeStatus) surgeStatus.style.display = 'none';
+        if (surgeTimerEl) surgeTimerEl.style.display = 'inline';
+        leftPanel.classList.add('flash-surge');
+        rightPanel.classList.add('flash-surge');
+        if (activateSurgeBtn) {
+            activateSurgeBtn.innerText = "Manual Override (+$$$)";
+            activateSurgeBtn.style.borderColor = "var(--border-glow)";
+            activateSurgeBtn.style.color = "var(--border-glow)";
+            activateSurgeBtn.style.boxShadow = "none";
+        }
+        playSound('surge');
+        logMessage("⚡ GRID SURGE ACTIVE: Processing power and bandwidth boosted 500%!");
+        refreshAllRows();
+    }
+    else {
+        clickCombo++; clearTimeout(comboTimer); comboTimer = setTimeout(() => { clickCombo = 0; }, 1500);
+        if (surgeCharge < 100 && !surgeActive) {
+            surgeCharge = surgeCharge + 2.5;
+            const surgeStatus = document.getElementById('surge-status');
+            const surgeBar = document.getElementById('surge-bar');
+            const activateSurgeBtn = document.getElementById('activate-surge-btn');
+            if (surgeStatus) surgeStatus.innerText = `GRID SURGE CHARGE: ${Math.floor(Math.min(100, surgeCharge))}%`;
+            if (surgeBar) surgeBar.style.width = Math.min(100, surgeCharge) + '%';
+            if (surgeCharge >= 100) {
+                if (activateSurgeBtn) {
+                    activateSurgeBtn.innerText = "⌛ INITIATE GRID SURGE (READY!)";
+                    activateSurgeBtn.style.borderColor = "var(--surge-color)";
+                    activateSurgeBtn.style.color = "var(--surge-color)";
+                    activateSurgeBtn.style.boxShadow = "0 0 10px rgba(255, 0, 85, 0.3)"
+                }
+                spawnToast("SURGE READY!", "var(--surge-color)");
+            }
+        }
+        else {
+            surgeCharge = surgeCharge + 2.5; }
+        let isCrit = Math.random() < (0.05 + (clickCombo * 0.01));
+        let comboMultiplier = 1 + clickCombo * 0.1;
+        if (isCrit) {
+            let critGain = 10.0 * comboMultiplier; cash += critGain; playSound('crit');
+            if (sfxVolume > 0 && audioCtx && audioCtx.state !== 'suspended') {
+                let synth = audioCtx.createOscillator(), g = audioCtx.createGain();
+                synth.connect(g); g.connect(audioCtx.destination);
+                synth.frequency.setValueAtTime(800 + (clickCombo * 20), audioCtx.currentTime);
+                g.gain.setValueAtTime(0.1 * sfxVolume, audioCtx.currentTime); synth.start(); synth.stop(audioCtx.currentTime + 0.1);
+            }
+            spawnBurstAt(e.clientX, e.clientY, ['⚡', '💎', '🔥', '✨']);
+            spawnToast(`!! CRITICAL COMBO x${clickCombo} !! +$${formatNum(critGain)}`, "#cc00ff", leftPanel);
+            logMessage(`CRITICAL COMBO HIT: +$${formatNum(critGain)}`);
+        } else {
+            let normalGain = 1.0 * comboMultiplier; cash += normalGain; playSound('click');
+            spawnBurstAt(e.clientX, e.clientY, ['💰', '📈']);
+            if(clickCombo > 5) { spawnToast(`Combo x${clickCombo}!`, "var(--border-glow)", leftPanel); }
+            logMessage("Manual pipeline ping: +$" + formatNum(normalGain));
+        }
+    }
+});
 
 document.getElementById('settings-toggle').addEventListener('click', () => {
     const settingsPanel = document.getElementById('settings-panel');
