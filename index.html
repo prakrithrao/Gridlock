@@ -26,7 +26,7 @@ body {
 }
 #settings-panel {
     width: 100%;
-    max-width: 806px;
+    max-width: 840px;
     box-sizing: border-box;
     background: #12121a;
     border: 2px solid #333;
@@ -302,21 +302,31 @@ select, input[type="checkbox"] {
         grid-column: span 1 !important;
     }
     #header-container {
-        flex-direction: column !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
         width: 100% !important;
-        gap: 10px;
+        justify-items: center;
+        align-items: center;
+    }
+    #header-container h1 {
+        grid-column: span 2 !important;
+        text-align: center;
+        order: -1;
+        font-size: 22px;
+        margin-bottom: 5px;
     }
     #header-container button {
         position: static !important;
         width: 100% !important;
-        height: 36px !important;
-    }
-    #header-container h1 {
-        order: -1; /* Keeps the game title at the top when elements stack */
-        font-size: 24px;
+        height: 40px !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px !important;
     }
     #how-to-play-modal > div {
-        width: 90% !important;
+        width: 95% !important;
         max-width: 600px;
     }
 }
@@ -383,32 +393,32 @@ select, input[type="checkbox"] {
             <button class="btn" id="toggle-buy-mode" style="padding: 4px 8px; font-size: 11px; width: auto; border-color: var(--border-glow); color: var(--border-glow);">🔄 ALL</button>
         </div>
         <div class="btn-row">
-            <button class="btn" id="buy-upA" style="flex: 3;">Buy Node A ($15)</button>
-            <button class="btn" id="all-upA" style="flex: 2;">ALL ($0)</button>
+            <button class="btn" id="buy-upA" style="flex: 1;">Buy Node A ($15)</button>
+            <button class="btn" id="all-upA" style="flex: 1;">ALL ($0)</button>
         </div>
         <div class="progress-bar-container"><div class="progress-bar" id="barA"></div></div>
         
         <div class="btn-row">
-            <button class="btn" id="buy-upB">Buy Node B ($120)</button>
-            <button class="btn" id="all-upB">ALL ($0)</button>
+            <button class="btn" id="buy-upB"style="flex: 1;">Buy Node B ($120)</button>
+            <button class="btn" id="all-upB"style="flex: 1;">ALL ($0)</button>
         </div>
         <div class="progress-bar-container"><div class="progress-bar" id="barB"></div></div>
         
         <div class="btn-row">
-            <button class="btn" id="buy-upC">Buy Node C ($500)</button>
-            <button class="btn" id="all-upC">ALL ($0)</button>
+            <button class="btn" id="buy-upC"style="flex: 1;">Buy Node C ($500)</button>
+            <button class="btn" id="all-upC"style="flex: 1;">ALL ($0)</button>
         </div>
         <div class="progress-bar-container"><div class="progress-bar" id="barC"></div></div>
         
         <div class="btn-row">
-            <button class="btn" id="buy-upD">Buy Node D ($2,500)</button>
-            <button class="btn" id="all-upD">ALL ($0)</button>
+            <button class="btn" id="buy-upD"style="flex: 1;">Buy Node D ($2,500)</button>
+            <button class="btn" id="all-upD"style="flex: 1;">ALL ($0)</button>
         </div>
         <div class="progress-bar-container"><div class="progress-bar" id="barD"></div></div>
         
         <div class="btn-row">
-            <button class="btn" id="buy-upE">Buy Node E ($15,000)</button>
-            <button class="btn" id="all-upE">ALL ($0)</button>
+            <button class="btn" id="buy-upE"style="flex: 1;">Buy Node E ($15,000)</button>
+            <button class="btn" id="all-upE"style="flex: 1;">ALL ($0)</button>
         </div>
         <div class="progress-bar-container"><div class="progress-bar" id="barE"></div></div>
     </div>
