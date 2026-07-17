@@ -327,7 +327,7 @@ select, input[type="checkbox"] {
     <button id="header-save-btn" class="btn" style="position: absolute; left: 0; border-color: var(--text-accent); color: var(--text-accent); font-size: 12px; font-weight: bold; white-space: nowrap; padding: 6px 15px; height: 32px; display: none; align-items: center; justify-content: center;">💾 SAVE PROGRESS</button>
     <button id="how-to-play-btn" class="btn" style="position: absolute; left: 0; border-color: var(--border-glow); color: var(--border-glow); font-size: 12px; font-weight: bold; white-space: nowrap; padding: 6px 15px; height: 32px; display: flex; align-items: center; justify-content: center;">❓ HOW TO PLAY</button>
     <h1 style="text-align: center; color: var(--border-glow); letter-spacing: 2px; margin: 0;">[ THE GRIDLOCK ]</h1>
-    <button id="settings-toggle" class="btn" style="position: absolute; right: 0; padding: 6px 15px; font-weight: bold;">📜 VIEW LOG</button>
+    <button id="settings-toggle" class="btn" style="position: absolute; right: 0; padding: 6px 15px; font-weight: bold;">📜 LOG</button>
 </div>
 <div id="settings-panel" style="display: grid;">
     <div class="settings-item" style="display: flex; flex-direction: column; width: 100%; gap: 6px; justify-content: flex-end;">
@@ -383,8 +383,8 @@ select, input[type="checkbox"] {
             <button class="btn" id="toggle-buy-mode" style="padding: 4px 8px; font-size: 11px; width: auto; border-color: var(--border-glow); color: var(--border-glow);">🔄 ALL</button>
         </div>
         <div class="btn-row">
-            <button class="btn" id="buy-upA">Buy Node A ($15)</button>
-            <button class="btn" id="all-upA">ALL ($0)</button>
+            <button class="btn" id="buy-upA" style="flex: 3;">Buy Node A ($15)</button>
+            <button class="btn" id="all-upA" style="flex: 2;">ALL ($0)</button>
         </div>
         <div class="progress-bar-container"><div class="progress-bar" id="barA"></div></div>
         
@@ -1033,12 +1033,12 @@ function gameLoop(now) {
 
         if (currentShopView === 'shop') {
             if (rightPanelTitle) rightPanelTitle.innerText = "Token Perk Shop";
-            if (shopMatrixToggle) shopMatrixToggle.innerHTML = "🎛️ VIEW REGISTRY";
+            if (shopMatrixToggle) shopMatrixToggle.innerHTML = "🎛️ REGISTRY";
             if (shopPanel) shopPanel.style.display = 'flex';
             if (matrixPanel) matrixPanel.style.display = 'none';
         } else {
             if (rightPanelTitle) rightPanelTitle.innerText = "System Matrix Registry";
-            if (shopMatrixToggle) shopMatrixToggle.innerHTML = "💎 VIEW PERK SHOP";
+            if (shopMatrixToggle) shopMatrixToggle.innerHTML = "💎 PERK SHOP";
             if (shopPanel) shopPanel.style.display = 'none';
             if (matrixPanel) matrixPanel.style.display = 'flex';
         }
@@ -1462,7 +1462,7 @@ document.getElementById('settings-toggle').addEventListener('click', () => {
     if (settingsPanel.style.display === 'none') {
         settingsPanel.style.display = 'grid';
         logPanel.style.display = 'none';
-        toggleBtn.innerHTML = '📜 VIEW LOG';
+        toggleBtn.innerHTML = '📜 LOG';
         if (headerSaveBtn) headerSaveBtn.style.display = 'none';
         if (howToPlayBtn) howToPlayBtn.style.display = 'flex';
     } else {
