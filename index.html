@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=0.5, user-scalable=yes, viewport-fit=cover">
-<title>THE GRIDLOCK // Safe v4.8</title>
+<title>THE GRIDLOCK // Safe v4.9</title>
 <style>
     canvas, body {
         touch-action: manipulation;
@@ -25,7 +25,9 @@ body {
     overflow-x: hidden;
 }
 #settings-panel {
-    width: 806px;
+    width: 100%;
+    max-width: 806px;
+    box-sizing: border-box;
     background: #12121a;
     border: 2px solid #333;
     padding: 15px;
@@ -54,7 +56,9 @@ select, input[type="checkbox"] {
     display: grid;
     grid-template-columns: 340px 480px;
     gap: 20px;
-    width: 840px;
+    width: 100%;
+    max-width: 840px;
+    box-sizing: border-box;
     position: relative;
     z-index: 2;
 }
@@ -277,10 +281,49 @@ select, input[type="checkbox"] {
     0% { transform: translateY(0); opacity: 1; }
     100% { transform: translateY(-50px); opacity: 0; }
 }
+
+/* Responsive & Orientation Optimization Styles */
+@media (max-width: 840px) or (orientation: portrait) {
+    body {
+        padding: 10px;
+    }
+    #settings-panel {
+        grid-template-columns: 1fr !important;
+        gap: 10px;
+    }
+    #settings-panel > div {
+        grid-column: span 1 !important;
+    }
+    #game-container {
+        grid-template-columns: 1fr !important;
+        gap: 15px;
+    }
+    #log {
+        grid-column: span 1 !important;
+    }
+    #header-container {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 10px;
+    }
+    #header-container button {
+        position: static !important;
+        width: 100% !important;
+        height: 36px !important;
+    }
+    #header-container h1 {
+        order: -1; /* Keeps the game title at the top when elements stack */
+        font-size: 24px;
+    }
+    #how-to-play-modal > div {
+        width: 90% !important;
+        max-width: 600px;
+    }
+}
 </style>
 </head>
 <body>
-<div style="display: flex; justify-content: center; align-items: center; width: 840px; position: relative; margin-bottom: 20px;">
+<div id="header-container" style="display: flex; justify-content: center; align-items: center; width: 100%; max-width: 840px; box-sizing: border-box; position: relative; margin-bottom: 20px;">
     <button id="header-save-btn" class="btn" style="position: absolute; left: 0; border-color: var(--text-accent); color: var(--text-accent); font-size: 12px; font-weight: bold; white-space: nowrap; padding: 6px 15px; height: 32px; display: none; align-items: center; justify-content: center;">💾 SAVE PROGRESS</button>
     <button id="how-to-play-btn" class="btn" style="position: absolute; left: 0; border-color: var(--border-glow); color: var(--border-glow); font-size: 12px; font-weight: bold; white-space: nowrap; padding: 6px 15px; height: 32px; display: flex; align-items: center; justify-content: center;">❓ HOW TO PLAY</button>
     <h1 style="text-align: center; color: var(--border-glow); letter-spacing: 2px; margin: 0;">[ THE GRIDLOCK ]</h1>
@@ -410,7 +453,7 @@ select, input[type="checkbox"] {
     </div>
 </div>
 <div id="how-to-play-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); z-index: 10000; justify-content: center; align-items: center;">
-    <div class="panel" style="width: 600px; max-height: 80vh; overflow-y: auto; border-color: var(--border-glow); box-shadow: 0 0 25px rgba(0, 240, 255, 0.2); position: relative; gap: 14px;">
+    <div class="panel" style="width: 100%; max-width: 600px; box-sizing: border-box; max-height: 80vh; overflow-y: auto; border-color: var(--border-glow); box-shadow: 0 0 25px rgba(0, 240, 255, 0.2); position: relative; gap: 14px;">
         <h2 style="color: var(--border-glow); margin: 0 0 5px 0; letter-spacing: 2px; text-align: center;">[ SYSTEM MANUAL // HOW TO PLAY ]</h2>
         <p style="margin: 0; line-height: 1.5; font-size: 13px;">👋 <b>Welcome to The Gridlock!</b> Your mission is to build an automated financial cyberpunk empire while surviving brutal market volatility.</p>
         <hr style="border: 0; border-top: 1px dashed #333; width: 100%; margin: 4px 0;">
