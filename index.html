@@ -298,8 +298,16 @@ select, input[type="checkbox"] {
         grid-template-columns: 1fr !important;
         gap: 15px;
     }
+    #right-panel {
+        order: 1;
+        height: 500px;
+    }
+    #left-panel {
+        order: 2;
+    }
     #log {
         grid-column: span 1 !important;
+        order: 3;
     }
     #header-container {
         display: grid !important;
@@ -1492,7 +1500,7 @@ document.getElementById('manual-btn').addEventListener('click', (e) => {
             activateSurgeBtn.style.boxShadow = "none";
         }
         playSound('surge');
-        logMessage("⚡ GRID SURGE ACTIVE: Processing power and bandwidth boosted 500%!");
+        logMessage("⚡GRID SURGE ACTIVE: Processing power and bandwidth boosted 500%!");
         refreshAllRows();
     }
     else {
