@@ -431,7 +431,7 @@ select, input[type="checkbox"] {
         <select id="theme-select" class="btn" style="width: 100%; height: 32px; text-align-last: center; padding: 6px; font-size: 11px; font-weight: bold; background-color: #111111; color: var(--text-accent); border-color: var(--text-accent); cursor: pointer;">
             <option value="cyber" style="background-color: #111111; color: #ffffff;">CYBERPUNK NEON</option>
             <option value="amber" style="background-color: #111111; color: #ffffff;">RETRO AMBER</option>
-            <option value="plasma" style="background-color: #111111; color: #ffffff;">PLASMA MAGENTA</option>
+            <option value="hyperpink" style="background-color: #111111; color: #ffffff;">HYPERPINK FUSION</option>
         </select>
     </div>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 11px; color: #ffffff; width: 100%; grid-column: span 2;">
@@ -816,7 +816,11 @@ document.getElementById('theme-select').addEventListener('change', (e) => {
     const choice = e.target.value;
     if (choice === 'cyber') { document.documentElement.style.setProperty('--border-glow', '#00f0ff'); document.documentElement.style.setProperty('--text-accent', '#00ff66'); document.documentElement.style.setProperty('--prestige-color', '#cc00ff'); }
     else if (choice === 'amber') { document.documentElement.style.setProperty('--border-glow', '#ffb000'); document.documentElement.style.setProperty('--text-accent', '#ffcc00'); document.documentElement.style.setProperty('--prestige-color', '#ff5f00'); }
-    else if (choice === 'plasma') { document.documentElement.style.setProperty('--border-glow', '#ff0055'); document.documentElement.style.setProperty('--text-accent', '#ff00ff'); document.documentElement.style.setProperty('--prestige-color', '#7000ff'); }
+    else if (choice === 'hyperpink') {
+        document.documentElement.style.setProperty('--border-glow', '#fe3382');
+        document.documentElement.style.setProperty('--text-accent', '#ffb3d9');
+        document.documentElement.style.setProperty('--prestige-color', '#cc00ff');
+    }
 });
 // Declare globally so line 464 can see it
 let audioCtx;
