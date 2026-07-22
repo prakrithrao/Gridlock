@@ -1585,6 +1585,42 @@ updateBgmVolume(0);
 updateSfxVolume(0);
 
 requestAnimationFrame(gameLoop);
+// Keyboard Shortcut: 'S' key saves progress and flashes save buttons
+window.addEventListener('keydown', (e) => {
+    // Ignore key press if user is currently typing inside an input or textarea
+    const active = document.activeElement;
+    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) {
+        return;
+    }
+
+    if (e.key === 's' || e.key === 'S') {
+        // Prevent default browser Ctrl+S / Cmd+S save page dialog
+        if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+        }
+
+        // Execute save
+        if (typeof saveGame === 'function') {
+            saveGame();
+        } else if (typeof saveData === 'function') {
+            saveData();
+        } else {
+            const headerBtn = document.getElementById('header-save-btn');
+            if (headerBtn) headerBtn.click();
+        }
+
+        // Trigger flash effect on all save buttons
+        const saveBtns = document.querySelectorAll('#header-save-btn, #manual-save-btn, #save-btn, .save-btn');
+        saveBtns.forEach(btn => {
+            btn.classList.remove('save-flash');
+            void btn.offsetWidth; // Force reflow so rapid key presses re-trigger animation
+            btn.classList.add('save-flash');
+            setTimeout(() => {
+                btn.classList.remove('save-flash');
+            }, 600);
+        });
+    }
+});
 </script>
 </body>
 </html>
