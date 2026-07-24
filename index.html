@@ -636,7 +636,15 @@ if (savedGameRaw) {
 
             // 2. Run core refresh loops to push correct numbers to your display elements
             refreshAllRows();
-            
+
+            if (load.theme) {
+                const themeSelect = document.getElementById('theme-select');
+                if (themeSelect) {
+                    themeSelect.value = load.theme;
+                    themeSelect.dispatchEvent(new Event('change'));
+                }
+            }
+
             if (typeof refreshShopLabels === 'function') refreshShopLabels();
             if (typeof calculateEPS === 'function') calculateEPS(); // Forces net income to match
             
@@ -1380,6 +1388,7 @@ function setupPurchaseMechanics(key) {
 // Function to export crucial variables to localStorage
 function saveGameProgress() {
     const gameState = {
+        theme: document.getElementById('theme-select') ? document.getElementById('theme-select').value : 'cyber',
         cash: cash,
         prestigeTokens: prestigeTokens,
         resetCount: resetCount,
