@@ -573,6 +573,7 @@ let surgeCharge = 0.0;
 let surgeActive = false;
 let surgeTimer = 0.0;
 let totalTokensEarned = 0;
+let shockStreak = 0;
 
 let basePrestigeRequirement = 100000;
 let perks = { 
@@ -596,6 +597,7 @@ if (savedGameRaw) {
         if (load.prestigeTokens !== undefined) prestigeTokens = load.prestigeTokens;
         if (load.resetCount !== undefined) resetCount = load.resetCount;
         if (load.totalTokensEarned !== undefined) totalTokensEarned = load.totalTokensEarned;
+        if (load.shockStreak !== undefined) shockStreak = load.shockStreak;
  
         if (load.perks) {
             if (load.perks.X) { perks.X.lvl = load.perks.X.lvl; perks.X.cost = load.perks.X.cost; }
@@ -1210,8 +1212,9 @@ setInterval(() => {
         shockTimer--; 
         if(shockCountdown) shockCountdown.innerText = "PENALTY IN: " + shockTimer + "s";
         if (shockTimer <= 0) { 
-            let penalty = cash * 0.5; 
-            cash -= penalty; 
+            let penalty = calculateEPS() * 15; 
+            shockStreak = 0;
+            cash = Math.max(cash - penalty, 0); 
             if (cash < 0) cash = 0; 
             triggerVisualFeedback(false, "WINDOW EXPIRED: Liquidated -$" + formatNum(penalty)); 
         }
@@ -1272,15 +1275,16 @@ function triggerVisualFeedback(type, message) {
 }
 function evaluateShock(choice) {
     if (isShockActive === 0 || blockShockEvents) return;
-    if (choice === shockType) { let win = cash; cash += win; triggerVisualFeedback(true, "SUCCESS: Hedge hit! Earned +$" + formatNum(win)); }
+    if (choice === shockType) { let win = calculateEPS() * 30 * Math.pow(2, shockStreak); cash += win; shockStreak += 1; triggerVisualFeedback(true, "SUCCESS: Hedge hit! Earned +$" + formatNum(win)); }
     else {
+        shockStreak = 0;
         if (Math.random() < 0.5) {
-            let reducedLoss = cash * 0.05; cash -= reducedLoss; playSound('buy');
+            let reducedLoss = calculateEPS() * 6; cash = Math.max(cash - reducedLoss, 0); if (cash < 0) cash = 0; playSound('buy');
             spawnToast("💥 SHIELD BUFFERED CRASH! 💥", "#ff7f00");
             triggerVisualFeedback('orange', "NEAR MISS: Firewall active! Lost only $" + formatNum(reducedLoss));
             return;
         }
-        let loss = cash * 0.2; cash -= loss; if (cash < 0) cash = 0; triggerVisualFeedback(false, "FAILURE: Liquidation! Lost $" + formatNum(loss));
+        let loss = calculateEPS() * 12; cash = Math.max(cash - loss, 0); if (cash < 0) cash = 0; triggerVisualFeedback(false, "FAILURE: Liquidation! Lost $" + formatNum(loss));
     }
 }
 
@@ -1392,6 +1396,7 @@ function saveGameProgress() {
         cash: cash,
         prestigeTokens: prestigeTokens,
         resetCount: resetCount,
+	shockStreak: shockStreak,
         totalTokensEarned: totalTokensEarned,
         perks: {
             X: { lvl: perks.X.lvl, cost: perks.X.cost },
@@ -1444,6 +1449,7 @@ function resetGameProgress() {
         totalTokensEarned = 0;
         surgeActive = false;
         surgeCharge = 0.0;
+        shockStreak = 0;
         const surgeBar = document.getElementById('surge-bar');
         const surgeStatus = document.getElementById('surge-status');
         const surgeTimerEl = document.getElementById('surge-timer');
